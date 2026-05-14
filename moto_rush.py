@@ -76,12 +76,12 @@ SAVE = load_save()
 
 # ── VEHICLES ──────────────────────────────────────────────────────────────[...]
 VEHICLES = [
-    {"id": "sport_bike",  "name": "Sport Bike",  "price":    0, "max_speed": 180, "accel": 130, "color": RED,              "desc": "Starter ride"},
-    {"id": "ninja_r",     "name": "Ninja R",      "price":  800, "max_speed": 220, "accel": 150, "color": BLUE,             "desc": "Track beast"},
-    {"id": "chopper",     "name": "Chopper",      "price":  600, "max_speed": 170, "accel": 100, "color": ORANGE,           "desc": "Heavy cruiser"},
-    {"id": "super_car",   "name": "SuperCar",     "price": 1500, "max_speed": 260, "accel": 180, "color": GOLD,             "desc": "Ultimate machine"},
-    {"id": "muscle_car",  "name": "Muscle Car",   "price": 1200, "max_speed": 240, "accel": 160, "color": (200, 34,   0),   "desc": "Raw power"},
-    {"id": "moto_gp",     "name": "MotoGP",       "price": 2000, "max_speed": 300, "accel": 200, "color": (200,  0, 255),   "desc": "Racing legend"},
+    {"id": "sport_bike",  "name": "Sport Bike",  "price":    0, "max_speed": 180, "accel": 50, "color": RED,              "desc": "Starter ride"},
+    {"id": "ninja_r",     "name": "Ninja R",      "price":  800, "max_speed": 220, "accel": 60, "color": BLUE,             "desc": "Track beast"},
+    {"id": "chopper",     "name": "Chopper",      "price":  600, "max_speed": 170, "accel": 40, "color": ORANGE,           "desc": "Heavy cruiser"},
+    {"id": "super_car",   "name": "SuperCar",     "price": 1500, "max_speed": 260, "accel": 70, "color": GOLD,             "desc": "Ultimate machine"},
+    {"id": "muscle_car",  "name": "Muscle Car",   "price": 1200, "max_speed": 240, "accel": 65, "color": (200, 34,   0),   "desc": "Raw power"},
+    {"id": "moto_gp",     "name": "MotoGP",       "price": 2000, "max_speed": 300, "accel": 75, "color": (200,  0, 255),   "desc": "Racing legend"},
 ]
 
 # ── LEVELS ───────────────────────────────────────────────────────────────[...]
@@ -233,12 +233,13 @@ class Player:
         self.color      = veh["color"]
 
     def update(self, dt, keys):
-        # Speed
+        # Speed - SLOWER acceleration when pressing W/UP
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.speed = min(self.max_speed, self.speed + self.accel * dt)
         elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.speed = max(0, self.speed - 150 * dt)
         else:
+            # Natural deceleration when no keys pressed
             self.speed = max(20, self.speed - 30 * dt)
 
         # Lane steering - player moves left/right but STAYS IN PLACE vertically

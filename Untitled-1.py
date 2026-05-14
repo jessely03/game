@@ -11,7 +11,7 @@ import json
 import os
 import sys
 
-# ── INIT ──────────────────────────────────────────────────────────────────────
+# ── INIT ──────────────────────────────────────────────────────────────[...]
 pygame.init()
 pygame.display.set_caption("MOTO RUSH PRO")
 
@@ -19,7 +19,7 @@ W, H = 900, 650
 screen = pygame.display.set_mode((W, H), pygame.RESIZABLE)
 clock  = pygame.time.Clock()
 
-# ── FONTS ─────────────────────────────────────────────────────────────────────
+# ── FONTS ───────────────────────────────────────────────────────────────[...]
 def font(size, bold=False):
     return pygame.font.SysFont("Arial", size, bold=bold)
 
@@ -28,7 +28,7 @@ F_MED    = font(22, True)
 F_SMALL  = font(14)
 F_TINY   = font(11)
 
-# ── COLOURS ───────────────────────────────────────────────────────────────────
+# ── COLOURS ─────────────────────────────────────────────────────────────[...]
 GOLD    = (255, 215,   0)
 ORANGE  = (255, 107,   0)
 RED     = (220,  30,  30)
@@ -49,7 +49,7 @@ CAR_COLORS = [
     ( 39, 174,  96),
 ]
 
-# ── SAVE / LOAD ───────────────────────────────────────────────────────────────
+# ── SAVE / LOAD ─────────────────────────────────────────────────────────────[...]
 SAVE_FILE = "moto_save.json"
 
 def load_save():
@@ -74,7 +74,7 @@ def write_save(save):
 
 SAVE = load_save()
 
-# ── VEHICLES ──────────────────────────────────────────────────────────────────
+# ── VEHICLES ──────────────────────────────────────────────────────────────[...]
 VEHICLES = [
     {"id": "sport_bike",  "name": "Sport Bike",  "price":    0, "max_speed": 180, "accel": 130, "color": RED,              "desc": "Starter ride"},
     {"id": "ninja_r",     "name": "Ninja R",      "price":  800, "max_speed": 220, "accel": 150, "color": BLUE,             "desc": "Track beast"},
@@ -84,7 +84,7 @@ VEHICLES = [
     {"id": "moto_gp",     "name": "MotoGP",       "price": 2000, "max_speed": 300, "accel": 200, "color": (200,  0, 255),   "desc": "Racing legend"},
 ]
 
-# ── LEVELS ────────────────────────────────────────────────────────────────────
+# ── LEVELS ───────────────────────────────────────────────────────────────[...]
 LEVELS = [
     {"n": 1, "name": "City Streets",   "goal":  500, "car_speed": (30,  55), "car_rate": 90,  "max_speed": 180},
     {"n": 2, "name": "Highway Chase",  "goal": 1000, "car_speed": (40,  70), "car_rate": 75,  "max_speed": 210},
@@ -96,7 +96,7 @@ LEVELS = [
 
 N_LANES = 5
 
-# ── HELPERS ───────────────────────────────────────────────────────────────────
+# ── HELPERS ─────────────────────────────────────────────────────────────[...]
 def lerp(a, b, t):
     return a + (b - a) * t
 
@@ -119,7 +119,7 @@ def draw_circle_alpha(surf, color, cx, cy, r, alpha=180):
     pygame.draw.circle(s, (*color, alpha), (r, r), r)
     surf.blit(s, (cx - r, cy - r))
 
-# ── PARTICLE ──────────────────────────────────────────────────────────────────
+# ── PARTICLE ──────────────────────────────────────────────────────────────[...]
 class Particle:
     def __init__(self, x, y, vx, vy, color, radius, life):
         self.x, self.y   = x, y
@@ -142,7 +142,7 @@ class Particle:
         r = max(1, int(self.r * ratio))
         draw_circle_alpha(surf, self.color, int(self.x), int(self.y), r, alpha)
 
-# ── TRAFFIC CAR ───────────────────────────────────────────────────────────────
+# ── TRAFFIC CAR ─────────────────────────────────────────────────────────────[...]
 class TrafficCar:
     TYPES = ["sedan", "suv", "truck", "van"]
 
@@ -186,7 +186,7 @@ class TrafficCar:
         # Outline
         pygame.draw.rect(surf, tuple(max(0, c-80) for c in col), body, 1, border_radius=5)
 
-# ── COIN ──────────────────────────────────────────────────────────────────────
+# ── COIN ──────────────────────────────────────────────────────────────[...]
 class Coin:
     def __init__(self, lane, lane_x):
         self.lane = lane
@@ -218,7 +218,7 @@ class Coin:
             label = F_TINY.render("$", True, (100, 60, 0))
             surf.blit(label, label.get_rect(center=(cx, cy)))
 
-# ── PLAYER ────────────────────────────────────────────────────────────────────
+# ── PLAYER ───────────────────────────────────────────────────────────────[...]
 class Player:
     def __init__(self, lanes, veh):
         self.lanes      = lanes
@@ -312,7 +312,7 @@ class Player:
         pygame.draw.rect(surf, (15, 15, 50),
                          (cx + lean + 2, cy - 48, 10, 26), border_radius=3)
 
-# ── ROAD DRAWING ──────────────────────────────────────────────────────────────
+# ── ROAD DRAWING ─────────────────────────────────────────────────────────────[...]
 def draw_road(surf, lanes, road_offset, mark_offset):
     rl, rr = int(W * 0.06), int(W * 0.94)
     vy = H // 2
@@ -381,7 +381,7 @@ def draw_road(surf, lanes, road_offset, mark_offset):
             draw_circle_alpha(surf, (255, 220, 100), lx, py - pole_h, int(28*sc), int(sc*160))
             draw_circle_alpha(surf, (255, 220, 100), rx, py - pole_h, int(28*sc), int(sc*160))
 
-# ── HUD ───────────────────────────────────────────────────────────────────────
+# ── HUD ──────────────────────────────────────────────────────────────[...]
 def draw_hud(surf, score, coins, dist, level_obj, speed, max_speed):
     # Score box
     draw_rect_alpha(surf, (0, 0, 0), (8, 8, 110, 50), 160, 6)
@@ -427,7 +427,7 @@ def draw_hud(surf, score, coins, dist, level_obj, speed, max_speed):
     draw_text(surf, f"{int(speed)}", F_MED, WHITE, sx, sy - 4)
     draw_text(surf, "km/h", F_TINY, GRAY, sx, sy + 14)
 
-# ── SCREENS ───────────────────────────────────────────────────────────────────
+# ── SCREENS ─────────────────────────────────────────────────────────────[...]
 def draw_gradient_bg(surf, top=(5, 8, 16), bot=(10, 4, 20)):
     for y in range(H):
         t = y / H
@@ -550,7 +550,7 @@ def pause_screen(surf):
     draw_text(surf, "PAUSED", F_TITLE, GOLD, W//2, H//2 - 50)
     draw_text(surf, "ESC — Resume    Q — Quit to Menu", F_MED, WHITE, W//2, H//2 + 10)
 
-# ── POPUP MESSAGES ────────────────────────────────────────────────────────────
+# ── POPUP MESSAGES ──────────────────────────────────────────────────────────[...]
 class Popup:
     def __init__(self):
         self.messages = []
@@ -572,9 +572,9 @@ class Popup:
             img.set_alpha(alpha)
             surf.blit(img, img.get_rect(center=(W//2, y2)))
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 # GAME STATE MACHINE
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 STATE_MENU    = "menu"
 STATE_PLAY    = "play"
 STATE_PAUSE   = "pause"
@@ -658,7 +658,7 @@ class Game:
                 random.uniform(0.5, 1.2)
             ))
 
-    # ── UPDATE ──────────────────────────────────────────────────────────────
+    # ── UPDATE ────────────────────────────────────────────────────────────[...]
     def update(self, dt, events, keys_pressed):
         self.menu_t += dt
 
@@ -825,7 +825,7 @@ class Game:
         self.state = STATE_RESULT
         self.win   = True
 
-    # ── DRAW ────────────────────────────────────────────────────────────────
+    # ── DRAW ────────────────────────────────────────────────────────────[...]
     def draw(self, surf):
         surf.fill(DARK)
 
@@ -893,10 +893,11 @@ class Game:
         self.popup.draw(surf)
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 # MAIN LOOP
-# ═══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════[...]
 def main():
+    global W, H, screen
     game = Game()
     running = True
     while running:
@@ -908,7 +909,6 @@ def main():
             if e.type == pygame.QUIT:
                 running = False
             if e.type == pygame.VIDEORESIZE:
-                global W, H
                 W, H = e.w, e.h
                 screen = pygame.display.set_mode((W, H), pygame.RESIZABLE)
 

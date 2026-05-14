@@ -144,7 +144,7 @@ class Particle:
 
 # ── TRAFFIC CAR ─────────────────────────────────────────────────────────────[...]
 class TrafficCar:
-    TYPES = ["sedan", "suv", "truck", "van"]
+    TYPES = ["car", "truck"]  # Only cars and trucks
 
     def __init__(self, lane, lane_x, speed):
         self.lane   = lane
@@ -154,8 +154,8 @@ class TrafficCar:
         self.color  = random.choice(CAR_COLORS)
         self.kind   = random.choice(self.TYPES)
         self.passed = False
-        self.w      = {"sedan": 38, "suv": 44, "truck": 56, "van": 50}[self.kind]
-        self.h      = {"sedan": 80, "suv": 90, "truck":110, "van":100}[self.kind]
+        self.w      = {"car": 38, "truck": 56}[self.kind]
+        self.h      = {"car": 80, "truck":110}[self.kind]
 
     def update(self, dt, player_speed):
         self.y += (player_speed - self.vy) * dt * 2.8
@@ -241,7 +241,7 @@ class Player:
         else:
             self.speed = max(20, self.speed - 30 * dt)
 
-        # Lane steering
+        # Lane steering - player moves left/right but STAYS IN PLACE vertically
         tx = self.lanes[self.target_lane]
         diff = tx - self.x
         self.x += diff * 9 * dt
@@ -250,7 +250,7 @@ class Player:
 
     def draw(self, surf):
         cx = int(self.x)
-        cy = H - 110
+        cy = H - 110  # Player ALWAYS stays at bottom
         col = self.color
         lean = int(self.tilt * 28)
 
@@ -745,11 +745,11 @@ class Game:
                 self._level_complete()
                 return True
 
-            # Spawn
+            # Spawn - REDUCED coin spawn rate (was 20, now 40 means half as many)
             car_rate = max(24, lvl["car_rate"] - p.speed * 0.15)
             if self.frame_n % max(1, int(car_rate)) == 0:
                 self.spawn_car()
-            if self.frame_n % max(1, int(max(20, 55 - p.speed * 0.1))) == 0:
+            if self.frame_n % max(1, int(max(40, 110 - p.speed * 0.1))) == 0:  # Reduced coin spawn
                 self.spawn_coin()
 
             # Traffic update + collision + near-miss

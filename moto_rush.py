@@ -19,7 +19,7 @@ W, H = 900, 650
 screen = pygame.display.set_mode((W, H), pygame.RESIZABLE)
 clock  = pygame.time.Clock()
 
-# ── FONTS ───────────────────────────────────────────────────────────────[...]
+# ── FONTS ─────────────────────────────────────────────────────────────[...]
 def font(size, bold=False):
     return pygame.font.SysFont("Arial", size, bold=bold)
 
@@ -28,7 +28,7 @@ F_MED    = font(22, True)
 F_SMALL  = font(14)
 F_TINY   = font(11)
 
-# ── COLOURS ─────────────────────────────────────────────────────────────[...]
+# ── COLOURS ───────────────────────────────────────────────────────────[...]
 GOLD    = (255, 215,   0)
 ORANGE  = (255, 107,   0)
 RED     = (220,  30,  30)
@@ -49,7 +49,7 @@ CAR_COLORS = [
     ( 39, 174,  96),
 ]
 
-# ── SAVE / LOAD ─────────────────────────────────────────────────────────────[...]
+# ── SAVE / LOAD ───────────────────────────────────────────────────────[...]
 SAVE_FILE = "moto_save.json"
 
 def load_save():
@@ -74,7 +74,7 @@ def write_save(save):
 
 SAVE = load_save()
 
-# ── VEHICLES ──────────────────────────────────────────────────────────────[...]
+# ── VEHICLES ──────────────────────────────────────────────────────────[...]
 VEHICLES = [
     {"id": "sport_bike",  "name": "Sport Bike",  "price":    0, "max_speed": 180, "accel": 50, "color": RED,              "desc": "Starter ride"},
     {"id": "ninja_r",     "name": "Ninja R",      "price":  800, "max_speed": 220, "accel": 60, "color": BLUE,             "desc": "Track beast"},
@@ -84,7 +84,7 @@ VEHICLES = [
     {"id": "moto_gp",     "name": "MotoGP",       "price": 2000, "max_speed": 300, "accel": 75, "color": (200,  0, 255),   "desc": "Racing legend"},
 ]
 
-# ── LEVELS ───────────────────────────────────────────────────────────────[...]
+# ── LEVELS ────────────────────────────────────────────────────────────[...]
 LEVELS = [
     {"n": 1, "name": "City Streets",   "goal":  500, "car_speed": (30,  55), "car_rate": 90,  "max_speed": 180},
     {"n": 2, "name": "Highway Chase",  "goal": 1000, "car_speed": (40,  70), "car_rate": 75,  "max_speed": 210},
@@ -96,7 +96,7 @@ LEVELS = [
 
 N_LANES = 5
 
-# ── HELPERS ─────────────────────────────────────────────────────────────[...]
+# ── HELPERS ───────────────────────────────────────────────────────────[...]
 def lerp(a, b, t):
     return a + (b - a) * t
 
@@ -119,7 +119,7 @@ def draw_circle_alpha(surf, color, cx, cy, r, alpha=180):
     pygame.draw.circle(s, (*color, alpha), (r, r), r)
     surf.blit(s, (cx - r, cy - r))
 
-# ── PARTICLE ──────────────────────────────────────────────────────────────[...]
+# ── PARTICLE ──────────────────────────────────────────────────────────[...]
 class Particle:
     def __init__(self, x, y, vx, vy, color, radius, life):
         self.x, self.y   = x, y
@@ -142,7 +142,7 @@ class Particle:
         r = max(1, int(self.r * ratio))
         draw_circle_alpha(surf, self.color, int(self.x), int(self.y), r, alpha)
 
-# ── TRAFFIC CAR ─────────────────────────────────────────────────────────────[...]
+# ── TRAFFIC CAR ───────────────────────────────────────────────────────[...]
 class TrafficCar:
     TYPES = ["car", "truck"]  # Only cars and trucks
 
@@ -160,31 +160,40 @@ class TrafficCar:
     def update(self, dt, player_speed):
         self.y += (player_speed - self.vy) * dt * 2.8
 
-    def draw(self, surf):
+    def draw(self, surf, scale=1.0):
         cx, cy = int(self.x), int(self.y)
-        w, h   = self.w, self.h
+        w, h   = int(self.w * scale), int(self.h * scale)
         col    = self.color
+        
         # Shadow
-        draw_circle_alpha(surf, BLACK, cx+3, cy+6, w//3, 80)
+        draw_circle_alpha(surf, BLACK, cx+3, cy+6, int(w//3 * scale), int(80 * scale))
+        
         # Body
         body = pygame.Rect(cx - w//2, cy - h//2, w, h)
-        pygame.draw.rect(surf, col, body, border_radius=5)
+        pygame.draw.rect(surf, col, body, border_radius=max(2, int(5*scale)))
+        
         # Roof
         roof_w, roof_h = int(w * 0.65), int(h * 0.42)
-        roof = pygame.Rect(cx - roof_w//2, cy - h//2 - roof_h + 4, roof_w, roof_h)
+        roof = pygame.Rect(cx - roof_w//2, cy - h//2 - roof_h + int(4*scale), roof_w, roof_h)
         dark = tuple(max(0, c - 60) for c in col)
-        pygame.draw.rect(surf, dark, roof, border_radius=4)
+        pygame.draw.rect(surf, dark, roof, border_radius=max(2, int(4*scale)))
+        
         # Windshield
-        ws = pygame.Rect(cx - roof_w//2 + 4, cy - h//2 - roof_h + 8, roof_w - 8, roof_h - 10)
-        pygame.draw.rect(surf, (100, 170, 220), ws, border_radius=3)
+        ws = pygame.Rect(cx - roof_w//2 + int(4*scale), cy - h//2 - roof_h + int(8*scale), roof_w - int(8*scale), roof_h - int(10*scale))
+        pygame.draw.rect(surf, (100, 170, 220), ws, border_radius=max(1, int(3*scale)))
+        
         # Headlights
-        pygame.draw.ellipse(surf, (255, 240, 180), (cx - w//2 + 3, cy - h//2 + 4, 10, 6))
-        pygame.draw.ellipse(surf, (255, 240, 180), (cx + w//2 - 13, cy - h//2 + 4, 10, 6))
+        hl_size_x = max(3, int(10*scale))
+        hl_size_y = max(2, int(6*scale))
+        pygame.draw.ellipse(surf, (255, 240, 180), (cx - w//2 + int(3*scale), cy - h//2 + int(4*scale), hl_size_x, hl_size_y))
+        pygame.draw.ellipse(surf, (255, 240, 180), (cx + w//2 - int(13*scale), cy - h//2 + int(4*scale), hl_size_x, hl_size_y))
+        
         # Tail lights
-        pygame.draw.ellipse(surf, (220, 40, 20), (cx - w//2 + 3, cy + h//2 - 10, 10, 6))
-        pygame.draw.ellipse(surf, (220, 40, 20), (cx + w//2 - 13, cy + h//2 - 10, 10, 6))
+        pygame.draw.ellipse(surf, (220, 40, 20), (cx - w//2 + int(3*scale), cy + h//2 - int(10*scale), hl_size_x, hl_size_y))
+        pygame.draw.ellipse(surf, (220, 40, 20), (cx + w//2 - int(13*scale), cy + h//2 - int(10*scale), hl_size_x, hl_size_y))
+        
         # Outline
-        pygame.draw.rect(surf, tuple(max(0, c-80) for c in col), body, 1, border_radius=5)
+        pygame.draw.rect(surf, tuple(max(0, c-80) for c in col), body, max(1, int(1*scale)), border_radius=max(2, int(5*scale)))
 
 # ── COIN ──────────────────────────────────────────────────────────────[...]
 class Coin:
@@ -201,24 +210,28 @@ class Coin:
         self.spin += 3 * dt
         self.bob  += 2 * dt
 
-    def draw(self, surf):
+    def draw(self, surf, scale=1.0):
         cx = int(self.x)
         cy = int(self.y + math.sin(self.bob) * 4)
         squish = abs(math.cos(self.spin))
-        r = 14
+        r = int(14 * scale)
+        
         # Glow
-        draw_circle_alpha(surf, GOLD, cx, cy, int(r * 2.2), 50)
+        draw_circle_alpha(surf, GOLD, cx, cy, int(r * 2.2), int(50 * scale))
+        
         # Outer ring
         w_half = max(2, int(r * squish))
         rect = pygame.Rect(cx - w_half, cy - r, w_half * 2, r * 2)
         pygame.draw.ellipse(surf, (184, 134, 11), rect)
+        
         inner = pygame.Rect(cx - max(1, int(w_half*0.85)), cy - int(r*0.85), max(2, int(w_half*1.7)), int(r*1.7))
         pygame.draw.ellipse(surf, GOLD, inner)
-        if squish > 0.3:
+        
+        if squish > 0.3 and scale > 0.5:
             label = F_TINY.render("$", True, (100, 60, 0))
             surf.blit(label, label.get_rect(center=(cx, cy)))
 
-# ── PLAYER ───────────────────────────────────────────────────────────────[...]
+# ── PLAYER ────────────────────────────────────────────────────────────[...]
 class Player:
     def __init__(self, lanes, veh):
         self.lanes      = lanes
@@ -313,29 +326,31 @@ class Player:
         pygame.draw.rect(surf, (15, 15, 50),
                          (cx + lean + 2, cy - 48, 10, 26), border_radius=3)
 
-# ── ROAD DRAWING ─────────────────────────────────────────────────────────────[...]
+# ── ROAD DRAWING ──────────────────────────────────────────────────────[...]
 def draw_road(surf, lanes, road_offset, mark_offset):
     rl, rr = int(W * 0.06), int(W * 0.94)
     vy = H // 2
 
-    # Sky
+    # Sky gradient with subtle animation
     for y in range(vy):
         t = y / vy
-        r = int(lerp(5, 16, t))
-        g = int(lerp(8, 24, t))
-        b = int(lerp(16, 40, t))
+        r = int(lerp(8, 20, t))
+        g = int(lerp(12, 30, t))
+        b = int(lerp(22, 50, t))
         surf.fill((r, g, b), (0, y, W, 1))
 
-    # Stars
-    for i in range(80):
+    # Stars with twinkling
+    for i in range(100):
         sx = (i * 173 + 7) % W
         sy = (i * 97 + 13) % vy
-        br = 180 if i % 3 == 0 else 100
-        surf.fill((br, br, br), (sx, sy, 1, 1))
+        br = int(180 + 50 * math.sin(road_offset * 0.01 + i)) if i % 3 == 0 else int(100 + 30 * math.sin(road_offset * 0.01 + i))
+        surf.fill((br, br, br), (sx, sy, 2, 2))
 
-    # Moon
-    pygame.draw.circle(surf, (255, 255, 220), (int(W * 0.82), int(H * 0.07)), 16)
-    draw_circle_alpha(surf, (255, 240, 180), int(W * 0.82), int(H * 0.07), 38, 60)
+    # Moon with enhanced glow
+    moon_x, moon_y = int(W * 0.82), int(H * 0.07)
+    pygame.draw.circle(surf, (255, 255, 220), (moon_x, moon_y), 18)
+    draw_circle_alpha(surf, (255, 240, 180), moon_x, moon_y, 45, 80)
+    draw_circle_alpha(surf, (255, 220, 100), moon_x, moon_y, 65, 40)
 
     # Grass
     surf.fill(GRASS_C, (0, vy, W, H - vy))
@@ -349,11 +364,15 @@ def draw_road(surf, lanes, road_offset, mark_offset):
     ]
     pygame.draw.polygon(surf, ROAD_C, road_pts)
 
-    # Edge lines
-    pygame.draw.line(surf, WHITE, (int(W*0.28), vy), (rl, H), 3)
-    pygame.draw.line(surf, WHITE, (int(W*0.72), vy), (rr, H), 3)
+    # Edge lines with glow
+    pygame.draw.line(surf, WHITE, (int(W*0.28), vy), (rl, H), 4)
+    pygame.draw.line(surf, WHITE, (int(W*0.72), vy), (rr, H), 4)
+    draw_circle_alpha(surf, WHITE, int(W*0.28), vy, 8, 100)
+    draw_circle_alpha(surf, WHITE, rl, H, 8, 100)
+    draw_circle_alpha(surf, WHITE, int(W*0.72), vy, 8, 100)
+    draw_circle_alpha(surf, WHITE, rr, H, 8, 100)
 
-    # Lane dashes
+    # Lane dashes with enhanced appearance
     for li in range(1, N_LANES):
         t = li / (N_LANES + 1)
         tx = int(W*0.28 + W*0.44 * t)
@@ -366,9 +385,9 @@ def draw_road(surf, lanes, road_offset, mark_offset):
             x1 = int(lerp(tx, bx, frac))
             x2 = int(lerp(tx, bx, (frac + 0.04) % 1))
             if y1 < y2:
-                pygame.draw.line(surf, (200, 200, 200, 100), (x1, y1), (x2, y2), 2)
+                pygame.draw.line(surf, (220, 220, 220), (x1, y1), (x2, y2), 3)
 
-    # Streetlights
+    # Streetlights with enhanced glow
     for i in range(8):
         frac = ((i / 8) + road_offset / H * 0.5) % 1
         py   = int(vy + frac * (H - vy))
@@ -376,40 +395,57 @@ def draw_road(surf, lanes, road_offset, mark_offset):
         lx   = int(W * 0.28 - sc * (W * 0.22))
         rx   = int(W * 0.72 + sc * (W * 0.20))
         pole_h = int(50 * sc)
-        pygame.draw.line(surf, (70, 70, 80), (lx, py), (lx, py - pole_h), max(1, int(2*sc)))
-        pygame.draw.line(surf, (70, 70, 80), (rx, py), (rx, py - pole_h), max(1, int(2*sc)))
+        
+        # Poles
+        pygame.draw.line(surf, (70, 70, 80), (lx, py), (lx, py - pole_h), max(2, int(3*sc)))
+        pygame.draw.line(surf, (70, 70, 80), (rx, py), (rx, py - pole_h), max(2, int(3*sc)))
+        
         if sc > 0.3:
-            draw_circle_alpha(surf, (255, 220, 100), lx, py - pole_h, int(28*sc), int(sc*160))
-            draw_circle_alpha(surf, (255, 220, 100), rx, py - pole_h, int(28*sc), int(sc*160))
+            # Enhanced glow
+            draw_circle_alpha(surf, (255, 240, 180), lx, py - pole_h, int(40*sc), int(sc*180))
+            draw_circle_alpha(surf, (255, 220, 100), lx, py - pole_h, int(50*sc), int(sc*100))
+            draw_circle_alpha(surf, (255, 240, 180), rx, py - pole_h, int(40*sc), int(sc*180))
+            draw_circle_alpha(surf, (255, 220, 100), rx, py - pole_h, int(50*sc), int(sc*100))
+            
+            # Light color
+            pygame.draw.circle(surf, (255, 245, 200), (lx, py - pole_h), max(3, int(8*sc)), 1)
+            pygame.draw.circle(surf, (255, 245, 200), (rx, py - pole_h), max(3, int(8*sc)), 1)
 
-# ── HUD ──────────────────────────────────────────────────────────────[...]
+# ── HUD ───────────────────────────────────────────────────────────────[...]
 def draw_hud(surf, score, coins, dist, level_obj, speed, max_speed):
-    # Score box
-    draw_rect_alpha(surf, (0, 0, 0), (8, 8, 110, 50), 160, 6)
+    # Score box with glow
+    draw_rect_alpha(surf, (0, 0, 0), (8, 8, 110, 50), 180, 8)
+    pygame.draw.rect(surf, (100, 80, 0), (8, 8, 110, 50), 2, border_radius=8)
+    draw_circle_alpha(surf, GOLD, 20, 20, 20, 40)
     draw_text(surf, "SCORE", F_TINY, GOLD, 63, 18)
     draw_text(surf, str(score), F_MED, WHITE, 63, 38)
 
-    # Level bar
+    # Level bar with enhanced visuals
     goal = level_obj["goal"]
     pct  = clamp(dist / goal, 0, 1)
     bar_x, bar_y, bar_w, bar_h = W//2 - 100, 10, 200, 10
-    draw_rect_alpha(surf, (30, 30, 30), (bar_x, bar_y, bar_w, bar_h), 200, 4)
+    draw_rect_alpha(surf, (30, 30, 30), (bar_x, bar_y, bar_w, bar_h), 220, 5)
+    pygame.draw.rect(surf, (60, 60, 80), (bar_x, bar_y, bar_w, bar_h), 2, border_radius=5)
     if pct > 0:
         fill_col = (int(lerp(0, 255, pct)), int(lerp(200, 100, pct)), 0)
         pygame.draw.rect(surf, fill_col,
                          (bar_x, bar_y, int(bar_w * pct), bar_h), border_radius=4)
+        # Glow on progress bar
+        draw_circle_alpha(surf, fill_col, int(bar_x + bar_w * pct), int(bar_y + bar_h//2), 15, 80)
     draw_text(surf, f"LVL {level_obj['n']}  {level_obj['name'].upper()}", F_TINY, GOLD, W//2, 26)
     draw_text(surf, f"{int(dist)}m / {goal}m", F_TINY, (180, 180, 180), W//2, 38)
 
-    # Coins box
-    draw_rect_alpha(surf, (0, 0, 0), (W - 118, 8, 110, 50), 160, 6)
+    # Coins box with glow
+    draw_rect_alpha(surf, (0, 0, 0), (W - 118, 8, 110, 50), 180, 8)
+    pygame.draw.rect(surf, (100, 80, 0), (W - 118, 8, 110, 50), 2, border_radius=8)
+    draw_circle_alpha(surf, GOLD, W - 55, 20, 20, 40)
     draw_text(surf, "COINS", F_TINY, GOLD, W - 63, 18)
     draw_text(surf, f"$ {coins}", F_MED, GOLD, W - 63, 38)
 
-    # Speedo arc (bottom-right)
+    # Speedo arc (bottom-right) with enhanced style
     sx, sy, sr = W - 65, H - 65, 52
-    draw_circle_alpha(surf, (10, 12, 20), sx, sy, sr, 200)
-    pygame.draw.circle(surf, (60, 50, 10), (sx, sy), sr, 2)
+    draw_circle_alpha(surf, (10, 12, 20), sx, sy, sr, 220)
+    pygame.draw.circle(surf, (80, 70, 20), (sx, sy), sr, 3)
     pct_s = clamp(speed / max_speed, 0, 1)
     start_a = math.radians(225)
     end_a   = math.radians(225 - 270 * pct_s)
@@ -424,11 +460,11 @@ def draw_hud(surf, score, coins, dist, level_obj, speed, max_speed):
         y1 = sy + int(math.sin(-a1) * (sr - 8))
         x2 = sx + int(math.cos(-a2) * (sr - 8))
         y2 = sy + int(math.sin(-a2) * (sr - 8))
-        pygame.draw.line(surf, c, (x1, y1), (x2, y2), 5)
+        pygame.draw.line(surf, c, (x1, y1), (x2, y2), 6)
     draw_text(surf, f"{int(speed)}", F_MED, WHITE, sx, sy - 4)
     draw_text(surf, "km/h", F_TINY, GRAY, sx, sy + 14)
 
-# ── SCREENS ─────────────────────────────────────────────────────────────[...]
+# ── SCREENS ───────────────────────────────────────────────────────────[...]
 def draw_gradient_bg(surf, top=(5, 8, 16), bot=(10, 4, 20)):
     for y in range(H):
         t = y / H
@@ -443,7 +479,7 @@ def main_menu(surf, menu_t):
     dash_offset = menu_t * 60
     for i in range(20):
         dx = (i * 55 - dash_offset) % W
-        pygame.draw.line(surf, (80, 60, 10), (int(dx), H//2 + 60), (int(dx + 35), H//2 + 60), 3)
+        pygame.draw.line(surf, (80, 60, 10), (int(dx), H//2 + 60), (int(dx + 35), H//2 + 60), 4)
 
     # Title
     draw_text(surf, "MOTO", F_TITLE, WHITE, W//2, H//2 - 160)
@@ -463,7 +499,7 @@ def main_menu(surf, menu_t):
     for l in range(4):
         lx = int((bx - 80 - (l*45 + menu_t*100) % 120))
         ly = by - 10 + l * 8
-        pygame.draw.line(surf, (255, 180, 0), (lx, ly), (lx + 30, ly), 2)
+        pygame.draw.line(surf, (255, 180, 0), (lx, ly), (lx + 30, ly), 3)
 
     # Buttons
     buttons = [
@@ -472,7 +508,8 @@ def main_menu(surf, menu_t):
         ("    QUIT  [ESC]",          H//2 + 185, (200, 80, 80), (50, 15, 15)),
     ]
     for label, by2, col, bg in buttons:
-        draw_rect_alpha(surf, bg, (W//2 - 130, by2 - 20, 260, 42), 210, 7)
+        draw_rect_alpha(surf, bg, (W//2 - 130, by2 - 20, 260, 42), 220, 8)
+        pygame.draw.rect(surf, col, (W//2 - 130, by2 - 20, 260, 42), 2, border_radius=8)
         draw_text(surf, label, F_MED, col, W//2, by2 + 1)
 
     draw_text(surf, "↑↓ Gas/Brake   ←→ Change Lane   ESC Pause", F_TINY, (80, 80, 100), W//2, H - 18)
@@ -498,10 +535,13 @@ def garage_screen(surf, selected_id, total_coins):
         sel   = v["id"] == selected_id
         bg    = (40, 30, 0) if sel else (15, 15, 30)
         border_col = GOLD if sel else ((0, 180, 80) if owned else (80, 80, 120))
-        draw_rect_alpha(surf, bg, (cx2, cy2, card_w, card_h), 220, 8)
-        pygame.draw.rect(surf, border_col, (cx2, cy2, card_w, card_h), 2, border_radius=8)
+        draw_rect_alpha(surf, bg, (cx2, cy2, card_w, card_h), 230, 10)
+        pygame.draw.rect(surf, border_col, (cx2, cy2, card_w, card_h), 3 if sel else 2, border_radius=10)
+        if sel:
+            draw_circle_alpha(surf, GOLD, cx2 + card_w//2, cy2 + card_h//2, card_w//2 + 15, 60)
         # Vehicle icon (coloured circle)
-        pygame.draw.circle(surf, v["color"], (cx2 + 36, cy2 + card_h//2 - 10), 22)
+        pygame.draw.circle(surf, v["color"], (cx2 + 36, cy2 + card_h//2 - 10), 24)
+        pygame.draw.circle(surf, (255, 255, 255), (cx2 + 36, cy2 + card_h//2 - 10), 24, 2)
         draw_text(surf, v["name"], F_MED, WHITE, cx2 + 130, cy2 + 22)
         draw_text(surf, v["desc"], F_TINY, GRAY, cx2 + 130, cy2 + 44)
         draw_text(surf, f"Spd:{v['max_speed']}  Acc:{v['accel']}", F_TINY, (160,160,180), cx2+130, cy2+62)
@@ -536,7 +576,8 @@ def result_screen(surf, win, score, earned_coins, dist, top_speed, level_n, next
     for i, (lbl, val) in enumerate(stats):
         bx2 = W//2 - 200 + (i % 2) * 210
         by2 = H//2 - 60 + (i // 2) * 75
-        draw_rect_alpha(surf, (20, 20, 40), (bx2, by2, 190, 60), 200, 7)
+        draw_rect_alpha(surf, (20, 20, 40), (bx2, by2, 190, 60), 220, 8)
+        pygame.draw.rect(surf, (80, 80, 120), (bx2, by2, 190, 60), 2, border_radius=8)
         draw_text(surf, lbl, F_TINY, GOLD, bx2 + 95, by2 + 14)
         draw_text(surf, val, F_MED,  WHITE, bx2 + 95, by2 + 38)
 
@@ -547,11 +588,11 @@ def result_screen(surf, win, score, earned_coins, dist, top_speed, level_n, next
     draw_text(surf, "ESC — Main Menu", F_SMALL, (160, 160, 180), W//2, H//2 + 132)
 
 def pause_screen(surf):
-    draw_rect_alpha(surf, (0, 0, 0), (0, 0, W, H), 160)
+    draw_rect_alpha(surf, (0, 0, 0), (0, 0, W, H), 180)
     draw_text(surf, "PAUSED", F_TITLE, GOLD, W//2, H//2 - 50)
     draw_text(surf, "ESC — Resume    Q — Quit to Menu", F_MED, WHITE, W//2, H//2 + 10)
 
-# ── POPUP MESSAGES ──────────────────────────────────────────────────────────[...]
+# ── POPUP MESSAGES ────────────────────────────────────────────────────[...]
 class Popup:
     def __init__(self):
         self.messages = []
@@ -573,9 +614,9 @@ class Popup:
             img.set_alpha(alpha)
             surf.blit(img, img.get_rect(center=(W//2, y2)))
 
-# ══════════════════════════════════════════════════════════════════[...]
+# ════════════════════════════════════════════════════════════════════
 # GAME STATE MACHINE
-# ══════════════════════════════════════════════════════════════════[...]
+# ════════════════════════════════════════════════════════════════════
 STATE_MENU    = "menu"
 STATE_PLAY    = "play"
 STATE_PAUSE   = "pause"
@@ -659,7 +700,7 @@ class Game:
                 random.uniform(0.5, 1.2)
             ))
 
-    # ── UPDATE ────────────────────────────────────────────────────────────[...]
+    # ── UPDATE ──────────────────────────────────────────────────────────[...]
     def update(self, dt, events, keys_pressed):
         self.menu_t += dt
 
@@ -848,25 +889,19 @@ class Game:
 
             draw_road(surf, self.lanes, self.road_off, self.mark_off)
 
-            # Coins (back-to-front)
+            # Coins (back-to-front) - STAY IN LANE
             for c in sorted(self.coins_list, key=lambda c: c.y):
                 if not c.collected and c.y > H * 0.45:
                     depth = clamp((c.y - H*0.45) / (H - H*0.45), 0.1, 1)
-                    cx2   = int(W/2 + (self.lanes[c.lane] - W/2) * depth)
-                    c2    = Coin(c.lane, cx2)
-                    c2.y  = c.y; c2.spin = c.spin; c2.bob = c.bob
-                    c2.draw(surf)
+                    scale = depth * 0.85
+                    c.draw(surf, scale=scale)
 
-            # Traffic (back-to-front)
+            # Traffic (back-to-front) - STAY IN LANE
             for car in sorted(self.traffic, key=lambda c: c.y):
                 if car.y > H * 0.42:
                     depth = clamp((car.y - H*0.42) / (H - H*0.42), 0.1, 1)
-                    cx2   = int(W/2 + (self.lanes[car.lane] - W/2) * depth)
                     sc2   = clamp(depth * 0.88, 0.18, 1)
-                    c2 = TrafficCar(car.lane, cx2, car.vy)
-                    c2.y = car.y; c2.color = car.color; c2.kind = car.kind
-                    c2.w = int(car.w * sc2); c2.h = int(car.h * sc2)
-                    c2.draw(surf)
+                    car.draw(surf, scale=sc2)
 
             # Particles
             for p2 in self.particles:
@@ -894,9 +929,9 @@ class Game:
         self.popup.draw(surf)
 
 
-# ══════════════════════════════════════════════════════════════════[...]
+# ════════════════════════════════════════════════════════════════════
 # MAIN LOOP
-# ══════════════════════════════════════════════════════════════════[...]
+# ════════════════════════════════════════════════════════════════════
 def main():
     global W, H, screen
     game = Game()

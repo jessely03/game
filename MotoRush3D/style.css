@@ -1,0 +1,226 @@
+:root {
+    --primary: #00f0ff;
+    --secondary: #ff003c;
+    --gold: #ffd700;
+    --dark: #050510;
+    --glass-bg: rgba(10, 15, 30, 0.6);
+    --glass-border: rgba(0, 240, 255, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--dark);
+    color: white;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+#game-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none; /* Let clicks pass through to 3D if needed */
+}
+
+/* Screens */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+    pointer-events: auto;
+}
+
+.hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.active {
+    opacity: 1;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+#menu-screen {
+    background: transparent;
+}
+
+#gameover-screen {
+    background: rgba(5, 0, 10, 0.85);
+}
+
+/* Typography */
+.glow-text {
+    font-size: 6rem;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 40px var(--primary);
+    margin-bottom: -10px;
+    letter-spacing: 2px;
+}
+
+.text-red {
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--secondary), 0 0 20px var(--secondary), 0 0 40px var(--secondary);
+}
+
+.sub-text {
+    font-size: 2.5rem;
+    color: var(--gold);
+    letter-spacing: 5px;
+    margin-bottom: 40px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.text-gold {
+    color: var(--gold) !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Buttons */
+.cyber-button {
+    pointer-events: auto;
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    padding: 15px 40px;
+    font-size: 1.5rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2) inset;
+    margin-bottom: 30px;
+}
+
+.cyber-button:hover {
+    background: var(--primary);
+    color: var(--dark);
+    box-shadow: 0 0 25px var(--primary);
+    transform: scale(1.05);
+}
+
+.settings-panel {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.small-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.controls {
+    text-align: center;
+    color: #ccc;
+    line-height: 1.8;
+    font-size: 1.1rem;
+    background: rgba(0,0,0,0.5);
+    padding: 15px 30px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* HUD */
+.hud-top {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+.hud-box {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 25px;
+    border-radius: 12px;
+    min-width: 150px;
+}
+
+.hud-box .label {
+    font-size: 0.9rem;
+    color: #aaa;
+    letter-spacing: 1px;
+}
+
+.hud-box .value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.hud-bottom {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+}
+
+.speed-dial {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 4px solid var(--primary);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+#speed-val {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.speed-dial .unit {
+    font-size: 0.9rem;
+    color: var(--primary);
+}
+
+.stats {
+    font-size: 2rem;
+    margin: 30px 0;
+    line-height: 1.5;
+    text-align: center;
+}
